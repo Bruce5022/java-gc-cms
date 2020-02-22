@@ -1,7 +1,17 @@
 -verbose:gc
+
+// 堆内存指定20M，不可以扩容
 -Xms20M
 -Xmx20M
+
+// 新生代的大小为10M
 -Xmn10M
+
+
 -XX:+PrintGCDetails
+
+// 新生代eden和Survivor的空间比例为8：1：1
 -XX:SurvivorRatio=8
+
+// 指定老年代的垃圾回收器为咱们学习的CMS，注意：CMS只能用于老年代。
 -XX:+UseConcMarkSweepGC

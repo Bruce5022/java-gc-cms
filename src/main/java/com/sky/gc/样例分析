@@ -1,0 +1,65 @@
+/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/bin/java -verbose:gc -Xms20M -Xmx20M -Xmn10M -XX:+PrintGCDetails -XX:SurvivorRatio=8 -XX:+UseConcMarkSweepGC -Dfile.encoding=UTF-8 -classpath /Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/deploy.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/ext/cldrdata.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/ext/dnsns.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/ext/jaccess.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/ext/jfxrt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/ext/localedata.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/ext/nashorn.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/ext/sunec.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/ext/sunjce_provider.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/ext/sunpkcs11.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/ext/zipfs.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/javaws.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/jfxswt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/management-agent.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/plugin.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/lib/ant-javafx.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/lib/dt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/lib/javafx-mx.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/lib/jconsole.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/lib/packager.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/lib/sa-jdi.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_92.jdk/Contents/Home/lib/tools.jar:/Users/xiongwei/Documents/workspace/IntelliJSpace/jvm_lectue/out/production/classes:/Users/xiongwei/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/5.1.34/46deba4adbdb4967367b013cbc67b7f7373da60a/mysql-connector-java-5.1.34.jar:/Users/xiongwei/.gradle/caches/modules-2/files-2.1/cglib/cglib/3.2.0/bced5c83ed985c080a24dc5a42b0ca631556f413/cglib-3.2.0.jar:/Users/xiongwei/.gradle/caches/modules-2/files-2.1/org.ow2.asm/asm/5.0.3/dcc2193db20e19e1feca8b1240dbbc4e190824fa/asm-5.0.3.jar:/Users/xiongwei/.gradle/caches/modules-2/files-2.1/org.apache.ant/ant/1.9.4/6d473e8653d952045f550f4ef225a9591b79094a/ant-1.9.4.jar:/Users/xiongwei/.gradle/caches/modules-2/files-2.1/org.apache.ant/ant-launcher/1.9.4/334b62cb4be0432769679e8b94e83f8fd5ed395c/ant-launcher-1.9.4.jar com.jvm.gc.MyTest5
+
+// 第一次在新生代中申请了4M的内存，并没有执行GC操作，因为我们新生代Eden空间的大小是8M，完全能容纳下
+111111
+
+// 接着再申请4M的大小，此时就发生了GC，很明显新生代已经容纳不下了
+// 可以看到在我们指定老年代的收集器为CMS时，它默认搭配的新生代收集器为ParNew
+[GC (Allocation Failure) [ParNew: 5119K->354K(9216K), 0.0038338 secs] 5119K->4452K(19456K), 0.0038874 secs] [Times: user=0.01 sys=0.00, real=0.00 secs]
+222222
+
+// 此时再申请2M的大小，发生了两次GC，一次是新生代，一次为老年代
+333333
+// 这次是新生代进行了一次GC，具体信息就不多说了，之前都学过
+[GC (Allocation Failure) [ParNew (promotion failed): 6657K->6814K(9216K), 0.0038483 secs][CMS: 8196K->8192K(10240K), 0.0041740 secs] 10755K->10573K(19456K), [Metaspace: 2650K->2650K(1056768K)], 0.0080758 secs] [Times: user=0.01 sys=0.00, real=0.01 secs]
+
+// 1.CMS初始标记阶段
+// 8592K-这是老年代存活的对象大小为8M，也就是我们在新生代申请的对象已经有8M晋升到老年代了
+// (10240K)-这是老年代的总大小，由于总堆大小我们指定的是20M，而新生代占据10M，所以老年代总大小刚好是10M
+// 14963K总堆使用情况
+// (19456K)总堆大小
+[GC (CMS Initial Mark) [1 CMS-initial-mark: 8192K(10240K)] 14669K(19456K), 0.0005176 secs] [Times: user=0.01 sys=0.00, real=0.00 secs]
+
+// 2.CMS并发标记阶段
+[CMS-concurrent-mark-start]
+[CMS-concurrent-mark: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]
+
+// 3.CMS并发预先清除阶段
+[CMS-concurrent-preclean-start]
+[CMS-concurrent-preclean: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]
+
+// 4.CMS并发可能失败的预先清除阶段
+[CMS-concurrent-abortable-preclean-start]
+[CMS-concurrent-abortable-preclean: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]
+
+// 5.最终重新标记
+// 年轻代占用的空间----[YG occupancy: 6800 K (9216 K)]
+// 重新对老年代进行了扫码操作----[Rescan (parallel) , 0.0020690 secs]
+// 对弱引用进行处理----[weak refs processing, 0.0000105 secs]
+// 类加载的处理----[class unloading, 0.0002582 secs]
+// 符号表的处理----[scrub string table, 0.0001471 secs]
+// 重新标记结果----[1 CMS-remark: 8192K(10240K)] 14992K(19456K), 0.0031107 secs]
+// 重新标记耗时---- [Times: user=0.00 sys=0.00, real=0.00 secs]
+[GC (CMS Final Remark) [YG occupancy: 6800 K (9216 K)][Rescan (parallel) , 0.0020690 secs][weak refs processing, 0.0000105 secs][class unloading, 0.0002582 secs][scrub symbol table, 0.0005401 secs][scrub string table, 0.0001471 secs][1 CMS-remark: 8192K(10240K)] 14992K(19456K), 0.0031107 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]
+
+// 6.Concurrent Sweep 并发清除
+[CMS-concurrent-sweep-start]
+[CMS-concurrent-sweep: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]
+
+// 7.Concurrent Reset 并发重置
+[CMS-concurrent-reset-start]
+[CMS-concurrent-reset: 0.000/0.000 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]
+
+
+Heap
+// 新生代使用情况
+ par new generation   total 9216K, used 6964K [0x00000007bec00000, 0x00000007bf600000, 0x00000007bf600000)
+  eden space 8192K,  85% used [0x00000007bec00000, 0x00000007bf2cd1e0, 0x00000007bf400000)
+  from space 1024K,   0% used [0x00000007bf400000, 0x00000007bf400000, 0x00000007bf500000)
+  to   space 1024K,   0% used [0x00000007bf500000, 0x00000007bf500000, 0x00000007bf600000)
+// used 8192K----老年代已经有8M的对象了
+ concurrent mark-sweep generation total 10240K, used 8192K [0x00000007bf600000, 0x00000007c0000000, 0x00000007c0000000)
+ Metaspace       used 2657K, capacity 4486K, committed 4864K, reserved 1056768K
+  class space    used 287K, capacity 386K, committed 512K, reserved 1048576K
+
+Process finished with exit code 0
