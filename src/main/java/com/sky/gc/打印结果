@@ -1,0 +1,32 @@
+Connected to the target VM, address: '127.0.0.1:62943', transport: 'socket'
+
+
+111111
+
+
+// 可以看到在我们指定老年代的收集器为CMS时，默认搭配的新生代收集器为ParNew
+[GC (Allocation Failure) [ParNew: 6487K->722K(9216K), 0.0018080 secs] 6487K->4819K(19456K), 0.0018448 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]
+
+
+222222
+
+// 此时再申请2M的大小，发生了两次GC，一次是新生代，一次为老年代
+3333333
+// 这次是新生代进行了一次GC，具体信息就不多说了，之前都学过
+[GC (Allocation Failure) [ParNew (promotion failed): 7026K->6402K(9216K), 0.0021774 secs][CMSDisconnected from the target VM, address: '127.0.0.1:62943', transport: 'socket'
+: 8604K->8592K(10240K), 0.0023376 secs] 11123K->10867K(19456K), [Metaspace: 2097K->2097K(4480K)], 0.0047248 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]
+// CMS初始标记阶段
+[GC (CMS Initial Mark) [1 CMS-initial-mark: 8592K(10240K)] 14963K(19456K), 0.0003768 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]
+4444444
+[CMS-concurrent-mark-start]
+Heap
+ par new generation   total 9216K, used 6859K [0x05800000, 0x06200000, 0x06200000)
+  eden space 8192K,  83% used [0x05800000, 0x05eb2d68, 0x06000000)
+  from space 1024K,   0% used [0x06000000, 0x06000000, 0x06100000)
+  to   space 1024K,   0% used [0x06100000, 0x06100000, 0x06200000)
+ concurrent mark-sweep generation total 10240K, used 8592K [0x06200000, 0x06c00000, 0x06c00000)
+ Metaspace       used 2101K, capacity 2312K, committed 2368K, reserved 4480K
+[CMS-concurrent-mark: 0.001/0.001 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]
+[CMS-concurrent-preclean-start]
+
+Process finished with exit code 0
